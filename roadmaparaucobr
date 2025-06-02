@@ -1,0 +1,1586 @@
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Calendar, DollarSign, Users, AlertTriangle, Check, X, Search, Filter, ChevronLeft, ChevronRight, Save, Download, Upload, Plus, Grid3X3, List, Layers, Eye, Edit, Copy, Trash2, CheckSquare, Square, ChevronDown, ZoomIn, ZoomOut, TrendingUp, Target, Clock, Award, BarChart3, PieChart, Activity, FileText, Briefcase, Shield } from 'lucide-react';
+
+// Função para formatar números com separador de milhares
+const formatNumber = (num) => {
+  return num.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+};
+
+const formatNumberDecimal = (num, decimals = 1) => {
+  return num.toLocaleString('pt-BR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+};
+
+// Configurações
+const pillars = ['Valor', 'Custo', 'Agilidade', 'Valores Organizacionais'];
+const workFronts = [
+  'ASSERTIVIDADE NA ENTREGA DOS CLIENTES',
+  'AUMENTO DE PRODUTIVIDADE COM IA APLICADA',
+  'DIGITALIZAR',
+  'ASSEGURAR A DISPONIBILIDADE, CUSTO E USO RACIONAL DA FIBRA',
+  'REDUÇÃO DO CUSTO TOTAL (AQUISIÇÃO, CONSUMO E CAPITAL DE GIRO)',
+  'CAPTURA DE VALOR',
+  'COMUNICAÇÃO E VISIBILIDADE DA MARCA',
+  'NEGÓCIO MARKETPLACE',
+  'REDES DE ARQUITETOS E ESPECIFICADORES',
+  'BOM CIDADÃO, RESPEITAMOS NOSSO ENTORNO E CRIAMOS VALOR',
+  'EXCELÊNCIA E INOVAÇÃO, QUEREMOS SER MELHORES',
+  'SEGURANÇA SEMPRE EM PRIMEIRO LUGAR',
+  'TRABALHO EM EQUIPE, JUNTOS SOMOS MAIS'
+];
+const statuses = ['Não iniciado', 'Em andamento', 'Finalizado', 'Cancelado'];
+const quarters = ['Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025', 'Q1 2026', 'Q2 2026', 'Q3 2026', 'Q4 2026'];
+const risks = ['Baixo', 'Médio', 'Alto'];
+const pillarColors = {
+  'Valor': '#BFB800',
+  'Custo': '#696158',
+  'Agilidade': '#EA7600',
+  'Valores Organizacionais': '#DFD1A7'
+};
+const statusColors = {
+  'Não iniciado': '#002060',
+  'Em andamento': '#696158',
+  'Finalizado': '#005300',
+  'Cancelado': '#CE0000'
+};
+const riskColors = {
+  'Baixo': '#10B981',
+  'Médio': '#002060',
+  'Alto': '#CE0000'
+};
+const responsibles = [
+  'Ana Silva', 'Carlos Mendes', 'Beatriz Santos', 'João Oliveira',
+  'Maria Costa', 'Pedro Almeida', 'Fernanda Lima', 'Roberto Souza',
+  'Juliana Pereira', 'Marcos Vieira', 'Patricia Rocha', 'Lucas Martins',
+  'Camila Barbosa', 'Rafael Nunes', 'Daniela Ferreira', 'Gustavo Ribeiro'
+];
+
+// Gerar projetos iniciais
+const generateInitialProjects = () => {
+  const names = [
+    'Modernização do Sistema de Vendas',
+    'Implementação de IA no Atendimento',
+    'Digitalização de Processos Florestais',
+    'Otimização da Cadeia de Suprimentos',
+    'Redução de Custos Operacionais',
+    'Programa de Sustentabilidade 2025',
+    'Portal de Clientes Premium',
+    'Marketplace B2B Madeireira',
+    'Expansão de Rede de Parceiros',
+    'Sistema de Gestão de Qualidade',
+    'Certificação ISO 14001',
+    'Programa de Segurança Zero Acidentes',
+    'Transformação Digital HR',
+    'Automação de Processos Industriais',
+    'Dashboard de Indicadores Estratégicos',
+    'Programa de Desenvolvimento de Líderes',
+    'Implementação SAP S/4HANA',
+    'Otimização de Rotas Logísticas',
+    'Sistema de Gestão de Contratos',
+    'Plataforma de Colaboração Digital',
+    'Programa de Inovação Aberta',
+    'Redução de Emissões de Carbono',
+    'Sistema de Rastreabilidade de Produtos',
+    'Portal de Fornecedores',
+    'Implementação de RPA',
+    'Programa de Eficiência Energética',
+    'Sistema de Gestão de Riscos',
+    'Plataforma de Treinamento Online',
+    'Projeto de Economia Circular',
+    'Sistema de Inteligência de Mercado',
+    'Programa de Diversidade e Inclusão',
+    'Implementação de IoT Industrial',
+    'Sistema de Gestão de Ativos',
+    'Programa de Qualidade Total',
+    'Portal de Comunicação Interna',
+    'Sistema de Gestão de Projetos',
+    'Programa de Redução de Desperdícios',
+    'Plataforma de Análise de Dados',
+    'Sistema de Gestão de Manutenção',
+    'Programa de Certificação de Fornecedores',
+    'Implementação de Blockchain',
+    'Sistema de Gestão de Documentos',
+    'Programa de Excelência Operacional',
+    'Portal de Autoatendimento',
+    'Sistema de Monitoramento Ambiental',
+    'Programa de Desenvolvimento Sustentável',
+    'Implementação de Machine Learning',
+    'Sistema de Gestão de Compliance',
+    'Programa de Melhoria Contínua',
+    'Plataforma de Gestão de Conhecimento',
+    'Sistema de Previsão de Demanda',
+    'Programa de Responsabilidade Social',
+    'Implementação de Analytics Avançado',
+    'Sistema de Gestão de Inventário',
+    'Programa de Transformação Cultural',
+    'Portal de Transparência',
+    'Sistema de Gestão de Crises',
+    'Programa de Aceleração Digital',
+    'Plataforma de Inovação Colaborativa',
+    'Sistema de Gestão de Performance',
+    'Programa de Sustentabilidade Florestal',
+    'Implementação de Realidade Aumentada',
+    'Sistema de Gestão de Custos',
+    'Programa de Capacitação Técnica',
+    'Portal de Relacionamento B2B',
+    'Sistema de Auditoria Digital',
+    'Programa de Otimização de Processos',
+    'Plataforma de Business Intelligence',
+    'Sistema de Gestão de Mudanças',
+    'Programa de Eficiência Operacional',
+    'Implementação de Chatbots',
+    'Sistema de Gestão de Talentos',
+    'Programa de Redução de Custos',
+    'Portal de Especificadores',
+    'Sistema de Monitoramento Online',
+    'Programa de Excelência em Vendas'
+  ];
+  
+return names.map((name, i) => ({
+    id: i + 1,
+    name,
+    pillar: pillars[i % 4],
+    workFront: workFronts[i % 13],
+    startQuarter: quarters[i % 8],
+    duration: 1 + (i % 8),
+    status: i < 1 ? 'Não iniciado' : i < 71 ? 'Em andamento' : i < 72 ? 'Finalizado' : i < 76 ? 'Cancelado' : 'Em andamento',
+    responsible: responsibles[i % 16],
+    description: `${name} é uma iniciativa estratégica focada em ${pillars[i % 4].toLowerCase()} que visa melhorar significativamente os processos e resultados da empresa através de soluções inovadoras e sustentáveis.`,
+    deliverables: ['Documento de especificação técnica', 'Protótipo funcional validado', 'Implementação em produção', 'Treinamento das equipes', 'Relatório de resultados'],
+    dependencies: i > 10 ? [`Projeto ${i - 5}`, `Projeto ${i - 10}`] : [],
+    metrics: `ROI esperado de ${15 + (i % 35)}% | Redução de custos de ${10 + (i % 20)}%`,
+    budget: 50000 + Math.floor(Math.random() * 1950000),
+    risk: risks[i % 3],
+    benefits: `Este projeto trará benefícios significativos para a organização, incluindo otimização de processos, redução de custos operacionais, melhoria na qualidade dos produtos e serviços, e maior satisfação dos clientes e colaboradores.`,
+    team: [responsibles[i % 16], responsibles[(i + 1) % 16], responsibles[(i + 2) % 16]],
+    progress: i < 1 ? 0 : i < 71 ? 20 + Math.floor(Math.random() * 60) : i < 72 ? 100 : 0,
+    lastUpdate: new Date().toISOString(),
+    createdAt: new Date(2024, 11, 1 + i).toISOString(),
+    tags: ['estratégico', pillars[i % 4].toLowerCase(), i % 3 === 0 ? 'prioritário' : 'regular'],
+    priority: 1 + (i % 5)
+  }));
+};
+
+// Modal de Visualização
+const ViewModal = ({ project, onClose, onEdit }) => {
+  if (!project) return null;
+  
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
+        <div className="px-6 py-4 border-b bg-gray-50 flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-900">{project.name}</h2>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-md">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="p-6 overflow-y-auto">
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div>
+              <p className="text-sm text-gray-600">Pilar</p>
+              <p className="font-medium">{project.pillar}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Status</p>
+              <span className="inline-block px-2 py-1 text-xs rounded-full" style={{ backgroundColor: statusColors[project.status] + '20', color: statusColors[project.status] }}>
+                {project.status}
+              </span>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Responsável</p>
+              <p className="font-medium">{project.responsible}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Orçamento</p>
+              <p className="font-medium">R$ {project.budget.toLocaleString('pt-BR')}</p>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm text-gray-600 mb-1">Descrição</p>
+              <p className="text-gray-900">{project.description}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 mb-1">Benefícios</p>
+              <p className="text-gray-900">{project.benefits}</p>
+            </div>
+          </div>
+        </div>
+        <div className="px-6 py-4 border-t bg-gray-50 flex justify-end space-x-3">
+          <button onClick={onEdit} className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+            Editar
+          </button>
+          <button onClick={onClose} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Modal de Formulário
+const FormModal = ({ project, onClose, onSave, isEdit }) => {
+  const [formData, setFormData] = useState(project || {
+    name: '',
+    pillar: '',
+    workFront: '',
+    status: 'Não iniciado',
+    responsible: '',
+    team: [],
+    startQuarter: 'Q1 2025',
+    duration: 1,
+    budget: 0,
+    risk: 'Baixo',
+    description: '',
+    deliverables: [''],
+    metrics: '',
+    benefits: '',
+    progress: 0
+  });
+
+  const handleSave = () => {
+    if (!formData.name || !formData.responsible) {
+      alert('Preencha os campos obrigatórios');
+      return;
+    }
+    if (formData.budget < 10000) {
+      alert('Orçamento mínimo: R$ 10.000');
+      return;
+    }
+    if (formData.description.length < 100 || formData.benefits.length < 100) {
+      alert('Descrição e benefícios: mínimo 100 caracteres');
+      return;
+    }
+    onSave(formData);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-hidden">
+        <div className="px-6 py-4 border-b bg-gray-50 flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-900">{isEdit ? 'Editar Projeto' : 'Novo Projeto'}</h2>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-md">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 140px)' }}>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nome do Projeto *</label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Pilar</label>
+                <select
+                  value={formData.pillar}
+                  onChange={(e) => setFormData({...formData, pillar: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                >
+                  <option value="">Selecione</option>
+                  {pillars.map(p => <option key={p} value={p}>{p}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({...formData, status: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                >
+                  {statuses.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Responsável *</label>
+                <select
+                  value={formData.responsible}
+                  onChange={(e) => setFormData({...formData, responsible: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                >
+                  <option value="">Selecione</option>
+                  {responsibles.map(r => <option key={r} value={r}>{r}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Risco</label>
+                <select
+                  value={formData.risk}
+                  onChange={(e) => setFormData({...formData, risk: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                >
+                  {risks.map(r => <option key={r} value={r}>{r}</option>)}
+                </select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Trimestre Início</label>
+                <select
+                  value={formData.startQuarter}
+                  onChange={(e) => setFormData({...formData, startQuarter: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                >
+                  {quarters.map(q => <option key={q} value={q}>{q}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Duração (trimestres)</label>
+                <input
+                  type="number"
+                  value={formData.duration}
+                  onChange={(e) => setFormData({...formData, duration: Number(e.target.value)})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  min="1"
+                  max="8"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Orçamento (R$)</label>
+              <input
+                type="number"
+                value={formData.budget}
+                onChange={(e) => setFormData({...formData, budget: Number(e.target.value)})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                min="10000"
+              />
+            </div>
+            {isEdit && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Progresso (%)</label>
+                <input
+                  type="number"
+                  value={formData.progress}
+                  onChange={(e) => setFormData({...formData, progress: Number(e.target.value)})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  min="0"
+                  max="100"
+                />
+              </div>
+            )}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Descrição * (mín. 100 caracteres)</label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                rows={3}
+              />
+              <p className="text-xs text-gray-500 mt-1">{formData.description.length} caracteres</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Benefícios * (mín. 100 caracteres)</label>
+              <textarea
+                value={formData.benefits}
+                onChange={(e) => setFormData({...formData, benefits: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                rows={3}
+              />
+              <p className="text-xs text-gray-500 mt-1">{formData.benefits.length} caracteres</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Métricas de Sucesso</label>
+              <input
+                type="text"
+                value={formData.metrics}
+                onChange={(e) => setFormData({...formData, metrics: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              />
+            </div>
+          </div>
+        </div>
+        <div className="px-6 py-4 border-t bg-gray-50 flex justify-end space-x-3">
+          <button onClick={onClose} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
+            Cancelar
+          </button>
+          <button onClick={handleSave} className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+            {isEdit ? 'Salvar' : 'Criar'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Dashboard Component
+const Dashboard = ({ projects }) => {
+  const stats = useMemo(() => {
+    const s = {
+      total: projects.length,
+      byStatus: {},
+      byPillar: {},
+      totalBudget: projects.reduce((sum, p) => sum + p.budget, 0),
+      totalBudgetUSD: projects.reduce((sum, p) => sum + p.budget, 0) / 5.7,
+      topProjects: [...projects].sort((a, b) => b.budget - a.budget).slice(0, 5),
+      criticalProjects: projects.filter(p => p.risk === 'Alto'),
+      avgProgress: projects.reduce((sum, p) => sum + p.progress, 0) / projects.length || 0
+    };
+    
+    statuses.forEach(status => {
+      s.byStatus[status] = projects.filter(p => p.status === status).length;
+    });
+    
+    pillars.forEach(pillar => {
+      const pp = projects.filter(p => p.pillar === pillar);
+      s.byPillar[pillar] = {
+        count: pp.length,
+        budget: pp.reduce((sum, p) => sum + p.budget, 0),
+        budgetUSD: pp.reduce((sum, p) => sum + p.budget, 0) / 5.7
+      };
+    });
+    
+    return s;
+  }, [projects]);
+
+  const getStatusIcon = (status) => {
+    switch(status) {
+      case 'Não iniciado': return Clock;
+      case 'Em andamento': return Activity;
+      case 'Finalizado': return CheckSquare;
+      case 'Cancelado': return X;
+      default: return Check;
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Compact KPIs Grid - All in one line */}
+      <div className="grid grid-cols-8 gap-2">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-2 rounded-lg shadow-md text-white">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-xs opacity-90">Total</p>
+              <p className="text-lg font-bold">{stats.total}</p>
+              <p className="text-xs opacity-75">{Math.round(stats.avgProgress)}%</p>
+            </div>
+            <Briefcase className="h-4 w-4 opacity-80" />
+          </div>
+        </div>
+        
+        {Object.entries(stats.byStatus).map(([status, count]) => {
+          const Icon = getStatusIcon(status);
+          return (
+            <div key={status} className="relative overflow-hidden rounded-lg shadow-md" style={{ backgroundColor: statusColors[status] }}>
+              <div className="absolute inset-0 bg-gradient-to-br from-black opacity-10"></div>
+              <div className="relative p-2 text-white">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <p className="text-xs opacity-90">{status}</p>
+                    <p className="text-lg font-bold">{count}</p>
+                    <p className="text-xs opacity-75">{((count / stats.total) * 100).toFixed(0)}%</p>
+                  </div>
+                  <Icon className="h-4 w-4 opacity-80" />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        
+        <div className="bg-gradient-to-br from-red-500 to-red-600 p-2 rounded-lg shadow-md text-white">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-xs opacity-90">Alto Risco</p>
+              <p className="text-lg font-bold">{stats.criticalProjects.length}</p>
+              <p className="text-xs opacity-75">Crítico</p>
+            </div>
+            <Shield className="h-4 w-4 opacity-80" />
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-green-500 to-green-600 p-2 rounded-lg shadow-md text-white">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-xs opacity-90">Orçamento</p>
+              <p className="text-base font-bold">R$ {formatNumber(stats.totalBudget / 1000000)}M</p>
+              <p className="text-xs opacity-75">US$ {formatNumberDecimal(stats.totalBudgetUSD / 1000000)}M</p>
+            </div>
+            <DollarSign className="h-4 w-4 opacity-80" />
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-2 rounded-lg shadow-md text-white">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-xs opacity-90">Média</p>
+              <p className="text-base font-bold">R$ {formatNumberDecimal((stats.totalBudget / stats.total) / 1000000)}M</p>
+              <p className="text-xs opacity-75">p/Projeto</p>
+            </div>
+            <TrendingUp className="h-4 w-4 opacity-80" />
+          </div>
+        </div>
+      </div>
+
+      {/* Bar Chart and Pie Chart for Projects by Pillar */}
+      <div className="grid grid-cols-2 gap-6">
+        {/* Bar Chart */}
+        <div className="bg-white p-6 rounded-xl shadow-lg h-full">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-gray-800">Projetos por Pilar Estratégico</h3>
+            <BarChart3 className="h-5 w-5 text-gray-400" />
+          </div>
+          <div className="space-y-3">
+            {Object.entries(stats.byPillar)
+              .sort((a, b) => b[1].count - a[1].count)
+              .map(([pillar, data]) => {
+                const percentage = (data.count / stats.total) * 100;
+                return (
+                  <div key={pillar} className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <div 
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: pillarColors[pillar] }}
+                        />
+                        <span className="text-sm font-medium text-gray-800">{pillar}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-sm font-bold text-gray-900">{data.count}</span>
+                        <span className="text-xs text-gray-600 ml-1">({percentage.toFixed(0)}%)</span>
+                        <span className="text-xs text-green-600 ml-3">R$ {formatNumberDecimal(data.budget / 1000000)}M</span>
+                        <span className="text-xs text-blue-600 ml-1">(US$ {formatNumberDecimal(data.budgetUSD / 1000000)}M)</span>
+                      </div>
+                    </div>
+                    <div className="relative">
+                      <div className="bg-gray-200 rounded-full h-6">
+                        <div 
+                          className="h-6 rounded-full flex items-center justify-center text-white text-xs font-bold transition-all duration-500 hover:opacity-90"
+                          style={{ 
+                            width: `${percentage}%`,
+                            backgroundColor: pillarColors[pillar],
+                            minWidth: '60px'
+                          }}
+                        >
+                          {data.count}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+
+        {/* Pie Chart */}
+        <div className="bg-white p-6 rounded-xl shadow-lg h-full">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-gray-800">Distribuição por Pilar Estratégico</h3>
+            <PieChart className="h-5 w-5 text-gray-400" />
+          </div>
+          <div className="flex flex-col items-center justify-center h-[calc(100%-3rem)]">
+            {/* SVG Pie Chart */}
+            <div className="mb-4">
+              <svg width="200" height="200" viewBox="0 0 200 200">
+                {(() => {
+                  let cumulativePercentage = 0;
+                  const radius = 80;
+                  const centerX = 100;
+                  const centerY = 100;
+                  
+                  return Object.entries(stats.byPillar).map(([pillar, data], index) => {
+                    const percentage = (data.count / stats.total) * 100;
+                    const startAngle = (cumulativePercentage * 360) / 100;
+                    const endAngle = ((cumulativePercentage + percentage) * 360) / 100;
+                    
+                    const startAngleRad = (startAngle * Math.PI) / 180;
+                    const endAngleRad = (endAngle * Math.PI) / 180;
+                    
+                    const x1 = centerX + radius * Math.cos(startAngleRad);
+                    const y1 = centerY + radius * Math.sin(startAngleRad);
+                    const x2 = centerX + radius * Math.cos(endAngleRad);
+                    const y2 = centerY + radius * Math.sin(endAngleRad);
+                    
+                    const largeArcFlag = endAngle - startAngle > 180 ? 1 : 0;
+                    
+                    const pathData = [
+                      `M ${centerX} ${centerY}`,
+                      `L ${x1} ${y1}`,
+                      `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`,
+                      'Z'
+                    ].join(' ');
+                    
+                    cumulativePercentage += percentage;
+                    
+                    // Calculate label position
+                    const midAngle = (startAngle + endAngle) / 2;
+                    const midAngleRad = (midAngle * Math.PI) / 180;
+                    const labelRadius = radius * 0.7;
+                    const labelX = centerX + labelRadius * Math.cos(midAngleRad);
+                    const labelY = centerY + labelRadius * Math.sin(midAngleRad);
+                    
+                    return (
+                      <g key={pillar}>
+                        <path
+                          d={pathData}
+                          fill={pillarColors[pillar]}
+                          stroke="white"
+                          strokeWidth="2"
+                          className="hover:opacity-80 transition-opacity cursor-pointer"
+                        />
+                        {percentage > 8 && (
+                          <text
+                            x={labelX}
+                            y={labelY}
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            className="fill-white font-bold text-sm"
+                          >
+                            {data.count}
+                          </text>
+                        )}
+                      </g>
+                    );
+                  });
+                })()}
+                {/* Center circle */}
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="35"
+                  fill="white"
+                  stroke="#E5E7EB"
+                  strokeWidth="2"
+                />
+                <text
+                  x="100"
+                  y="95"
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  className="fill-gray-900 font-bold text-xl"
+                >
+                  {stats.total}
+                </text>
+                <text
+                  x="100"
+                  y="110"
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  className="fill-gray-600 text-xs"
+                >
+                  Projetos
+                </text>
+              </svg>
+            </div>
+            
+            {/* Legend */}
+            <div className="grid grid-cols-2 gap-x-6 gap-y-2 w-full">
+              {Object.entries(stats.byPillar).map(([pillar, data]) => {
+                const percentage = (data.count / stats.total) * 100;
+                return (
+                  <div key={pillar} className="flex items-center space-x-2">
+                    <div 
+                      className="w-3 h-3 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: pillarColors[pillar] }}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-gray-800 truncate">{pillar}</p>
+                      <p className="text-xs text-gray-600">
+                        {data.count} ({percentage.toFixed(0)}%) • R$ {formatNumberDecimal(data.budget / 1000000)}M • US$ {formatNumberDecimal(data.budgetUSD / 1000000)}M
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Top 5 Projects Enhanced */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white p-8 rounded-xl shadow-lg">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-bold text-gray-800">Top 5 Projetos por Investimento</h3>
+            <Award className="h-6 w-6 text-gray-400" />
+          </div>
+          <div className="space-y-4">
+            {stats.topProjects.map((project, i) => (
+              <div key={project.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <div className="flex items-center space-x-4 flex-1">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white ${i === 0 ? 'bg-yellow-500' : i === 1 ? 'bg-gray-400' : i === 2 ? 'bg-orange-600' : 'bg-gray-600'}`}>
+                    {i + 1}
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-bold text-gray-900">{project.name}</p>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <span className="text-sm text-gray-600">{project.responsible}</span>
+                      <span className="text-xs px-2 py-1 rounded-full" style={{ backgroundColor: pillarColors[project.pillar] + '30', color: pillarColors[project.pillar] }}>
+                        {project.pillar}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-xl font-bold text-gray-900">R$ {formatNumberDecimal(project.budget / 1000000)}M</p>
+                  <p className="text-xs text-blue-600">US$ {formatNumberDecimal(project.budget / 5.7 / 1000000)}M</p>
+                  <div className="w-32 bg-gray-200 rounded-full h-2 mt-2">
+                    <div 
+                      className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-600"
+                      style={{ width: `${(project.budget / stats.topProjects[0].budget) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Critical Projects Enhanced */}
+        {stats.criticalProjects.length > 0 && (
+          <div className="bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-200 p-8 rounded-xl">
+            <div className="flex items-center mb-6">
+              <div className="bg-red-100 p-3 rounded-lg mr-4">
+                <AlertTriangle className="h-8 w-8 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-red-900">
+                  Projetos Críticos - Ação Imediata
+                </h3>
+                <p className="text-sm text-red-700 mt-1">{stats.criticalProjects.length} projetos com risco alto</p>
+              </div>
+            </div>
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {stats.criticalProjects.slice(0, 5).map(project => (
+                <div key={project.id} className="bg-white p-4 rounded-lg border-2 border-red-200 hover:border-red-300 transition-colors">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h4 className="font-bold text-gray-900">{project.name}</h4>
+                      <p className="text-sm text-gray-600 mt-1">{project.responsible}</p>
+                    </div>
+                    <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0 ml-2" />
+                  </div>
+                  <div className="flex items-center justify-between mt-3">
+                    <span className="text-xs px-3 py-1 rounded-full font-medium" style={{ 
+                      backgroundColor: statusColors[project.status] + '20',
+                      color: statusColors[project.status]
+                    }}>
+                      {project.status}
+                    </span>
+                    <span className="text-sm font-bold text-red-600">R$ {formatNumberDecimal(project.budget / 1000000)}M</span>
+                  </div>
+                </div>
+              ))}
+              {stats.criticalProjects.length > 5 && (
+                <p className="text-center text-sm text-red-600 font-medium pt-2">
+                  +{stats.criticalProjects.length - 5} outros projetos críticos
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Timeline Component Enhanced
+const Timeline = ({ projects, onDragStart, onDragEnd, onDrop }) => {
+  const [zoom, setZoom] = useState(100);
+  const [viewMode, setViewMode] = useState('normal');
+  const [filters, setFilters] = useState({
+    pillar: '',
+    status: '',
+    responsible: '',
+    risk: ''
+  });
+  
+  // Filter projects before grouping by pillar
+  const filteredProjects = useMemo(() => {
+    return projects.filter(p => {
+      return (!filters.pillar || p.pillar === filters.pillar) &&
+             (!filters.status || p.status === filters.status) &&
+             (!filters.responsible || p.responsible === filters.responsible) &&
+             (!filters.risk || p.risk === filters.risk);
+    });
+  }, [projects, filters]);
+  
+  const projectsByPillar = useMemo(() => {
+    const result = {};
+    pillars.forEach(pillar => {
+      result[pillar] = filteredProjects.filter(p => p.pillar === pillar);
+    });
+    return result;
+  }, [filteredProjects]);
+
+  const getPillarIcon = (pillar) => {
+    switch(pillar) {
+      case 'Valor': return DollarSign;
+      case 'Custo': return TrendingUp;
+      case 'Agilidade': return Activity;
+      case 'Valores Organizacionais': return Users;
+      default: return Layers;
+    }
+  };
+
+  // Calculate optimal height for each pillar row
+  const getRowHeight = (pillar) => {
+    const maxProjectsInQuarter = Math.max(...quarters.map(q => 
+      projectsByPillar[pillar].filter(p => p.startQuarter === q).length
+    ));
+    const baseHeight = viewMode === 'compact' ? 60 : viewMode === 'expanded' ? 100 : 80;
+    return Math.max(100, baseHeight + (maxProjectsInQuarter * 70));
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Filters */}
+      <div className="bg-white p-4 rounded-xl shadow-md">
+        <div className="flex gap-2 items-center">
+          <div className="flex items-center text-sm text-gray-600 mr-2">
+            <Filter className="h-4 w-4 mr-1" />
+            Filtros:
+          </div>
+          <select 
+            value={filters.pillar} 
+            onChange={(e) => setFilters({...filters, pillar: e.target.value})}
+            className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            <option value="">Todos os Pilares</option>
+            {pillars.map(p => <option key={p} value={p}>{p}</option>)}
+          </select>
+          <select 
+            value={filters.status} 
+            onChange={(e) => setFilters({...filters, status: e.target.value})}
+            className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            <option value="">Todos os Status</option>
+            {statuses.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+          <select 
+            value={filters.responsible} 
+            onChange={(e) => setFilters({...filters, responsible: e.target.value})}
+            className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            <option value="">Todos os Responsáveis</option>
+            {[...new Set(projects.map(p => p.responsible))].sort().map(r => <option key={r} value={r}>{r}</option>)}
+          </select>
+          <select 
+            value={filters.risk} 
+            onChange={(e) => setFilters({...filters, risk: e.target.value})}
+            className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            <option value="">Todos os Riscos</option>
+            {risks.map(r => <option key={r} value={r}>{r}</option>)}
+          </select>
+          <button 
+            onClick={() => setFilters({ pillar: '', status: '', responsible: '', risk: '' })} 
+            className="px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors"
+          >
+            <X className="h-4 w-4 inline mr-1" />
+            Limpar
+          </button>
+          <div className="ml-auto flex items-center space-x-2">
+            <span className="text-sm text-gray-600">{filteredProjects.length} projetos</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Timeline */}
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="p-6 border-b bg-gradient-to-r from-gray-50 to-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-lg font-bold text-gray-800 flex items-center">
+                <Calendar className="h-5 w-5 mr-2 text-green-600" />
+                Timeline Estratégica
+              </h3>
+              <p className="text-sm text-gray-600 mt-1">Arraste projetos entre trimestres e pilares para replanejar</p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 bg-white px-3 py-2 rounded-lg shadow-sm">
+                <button onClick={() => setZoom(Math.max(50, zoom - 10))} className="p-1 hover:bg-gray-100 rounded transition-colors">
+                  <ZoomOut className="h-4 w-4 text-gray-600" />
+                </button>
+                <span className="text-sm font-medium text-gray-700 w-12 text-center">{zoom}%</span>
+                <button onClick={() => setZoom(Math.min(150, zoom + 10))} className="p-1 hover:bg-gray-100 rounded transition-colors">
+                  <ZoomIn className="h-4 w-4 text-gray-600" />
+                </button>
+              </div>
+              <select 
+                value={viewMode} 
+                onChange={(e) => setViewMode(e.target.value)}
+                className="px-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value="compact">Compacto</option>
+                <option value="normal">Normal</option>
+                <option value="expanded">Expandido</option>
+              </select>
+            </div>
+          </div>
+          
+          {/* Status Legend */}
+          <div className="flex items-center space-x-6 bg-white px-4 py-2 rounded-lg shadow-sm">
+            <span className="text-xs font-medium text-gray-600">Legenda de Status:</span>
+            {statuses.map(status => (
+              <div key={status} className="flex items-center space-x-2">
+                <div 
+                  className="w-4 h-4 rounded border-2"
+                  style={{ 
+                    backgroundColor: statusColors[status] + '20',
+                    borderColor: statusColors[status]
+                  }}
+                />
+                <span className="text-xs text-gray-700">{status}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="overflow-x-auto bg-gray-50">
+          <div style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'top left', minWidth: '100%' }}>
+            <table className="w-full table-fixed">
+              <thead>
+                <tr className="bg-gradient-to-b from-gray-100 to-gray-200">
+                  <th className="px-4 py-3 text-left text-sm font-bold text-gray-700 sticky left-0 bg-gradient-to-r from-gray-100 to-gray-200 z-10 w-48 border-r-2 border-gray-300">
+                    Pilar Estratégico
+                  </th>
+                  {quarters.map(q => (
+                    <th key={q} className="px-2 py-3 text-center text-xs font-bold text-gray-700 border-r border-gray-300" style={{ width: `${100 / quarters.length}%` }}>
+                      {q}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {pillars.map((pillar, i) => {
+                  const Icon = getPillarIcon(pillar);
+                  const rowHeight = getRowHeight(pillar);
+                  const hasProjects = projectsByPillar[pillar].length > 0;
+                  
+                  return (
+                    <tr key={pillar} style={{ height: hasProjects ? 'auto' : '60px' }}>
+                      <td 
+                        className="px-4 py-3 font-bold sticky left-0 z-10 border-r-2 border-gray-300 align-top"
+                        style={{ 
+                          backgroundColor: pillarColors[pillar],
+                          color: pillar === 'Valores Organizacionais' ? '#2D3748' : 'white'
+                        }}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <Icon className="h-6 w-6 drop-shadow-md" />
+                          <span className="drop-shadow-md text-base font-extrabold tracking-wide">{pillar}</span>
+                        </div>
+                      </td>
+                      {quarters.map(quarter => {
+                        const quarterProjects = projectsByPillar[pillar].filter(p => p.startQuarter === quarter);
+                        const cellHeight = viewMode === 'compact' 
+                          ? Math.max(50, 30 + (quarterProjects.length * 45))
+                          : viewMode === 'expanded'
+                          ? Math.max(90, 50 + (quarterProjects.length * 85))
+                          : Math.max(70, 40 + (quarterProjects.length * 65));
+                          
+                        return (
+                          <td
+                            key={quarter}
+                            className="px-2 py-2 border-r border-gray-300 align-top relative"
+                            onDragOver={(e) => e.preventDefault()}
+                            onDrop={(e) => onDrop(e, quarter, pillar)}
+                            style={{ 
+                              backgroundColor: pillarColors[pillar] + '10',
+                              minHeight: `${cellHeight}px`
+                            }}
+                          >
+                            <div className="space-y-1">
+                              {quarterProjects.map(project => (
+                                <div
+                                  key={project.id}
+                                  draggable
+                                  onDragStart={(e) => onDragStart(e, project)}
+                                  onDragEnd={onDragEnd}
+                                  className={`
+                                    rounded-lg cursor-move transition-all hover:shadow-lg hover:scale-105
+                                    ${viewMode === 'compact' ? 'text-xs p-1.5' : viewMode === 'expanded' ? 'text-sm p-2.5' : 'text-xs p-2'}
+                                    shadow-md border-l-4
+                                  `}
+                                  style={{ 
+                                    backgroundColor: statusColors[project.status] + '15',
+                                    borderLeftColor: statusColors[project.status]
+                                  }}
+                                >
+                                  <div className="font-bold truncate text-gray-900">
+                                    {project.name}
+                                  </div>
+                                  {viewMode !== 'compact' && (
+                                    <div className="flex items-center justify-between mt-1">
+                                      <span className="text-xs truncate flex items-center text-gray-700">
+                                        <Users className="h-3 w-3 mr-1" />
+                                        {project.responsible.split(' ')[0]}
+                                      </span>
+                                      <div className="flex items-center space-x-1">
+                                        {project.risk === 'Alto' && (
+                                          <AlertTriangle className="h-3 w-3 text-red-600" />
+                                        )}
+                                        <span className="text-xs font-medium px-1.5 py-0.5 rounded-full text-white" style={{ 
+                                          backgroundColor: statusColors[project.status]
+                                        }}>
+                                          {project.progress}%
+                                        </span>
+                                      </div>
+                                    </div>
+                                  )}
+                                  {viewMode === 'expanded' && (
+                                    <div className="mt-1 text-xs text-gray-600">
+                                      R$ {(project.budget / 1000000).toFixed(1)}M • {project.duration} trim.
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                              {quarterProjects.length === 0 && (
+                                <div className="h-full min-h-[50px] flex items-center justify-center">
+                                  <div className="text-xs text-gray-400 bg-white bg-opacity-50 px-2 py-1 rounded">
+                                    Solte aqui
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+                <tr className="bg-gradient-to-b from-gray-100 to-gray-200 font-bold">
+                  <td className="px-4 py-3 sticky left-0 bg-gradient-to-r from-gray-100 to-gray-200 z-10 border-r-2 border-gray-300">
+                    <div className="flex items-center text-sm">
+                      <BarChart3 className="h-4 w-4 mr-2 text-gray-600" />
+                      Total por Trimestre
+                    </div>
+                  </td>
+                  {quarters.map(q => {
+                    const count = filteredProjects.filter(p => p.startQuarter === q).length;
+                    const budget = filteredProjects.filter(p => p.startQuarter === q).reduce((sum, p) => sum + p.budget, 0);
+                    return (
+                      <td key={q} className="px-2 py-3 text-center border-r border-gray-300">
+                        <div className="font-bold text-gray-800 text-xs">{count} projetos</div>
+                        <div className="text-xs text-gray-600">R$ {(budget / 1000000).toFixed(1)}M</div>
+                      </td>
+                    );
+                  })}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ProjectCard Component Enhanced
+const ProjectCard = ({ project, selected, onSelect, onView, onEdit }) => (
+  <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
+    <div className="h-2 bg-gradient-to-r" style={{ background: `linear-gradient(to right, ${pillarColors[project.pillar]}, ${pillarColors[project.pillar]}dd)` }} />
+    <div className="p-5">
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex items-start space-x-3 flex-1">
+          <input 
+            type="checkbox" 
+            checked={selected} 
+            onChange={onSelect} 
+            className="mt-1 w-4 h-4 text-green-600 rounded focus:ring-green-500" 
+          />
+          <div className="flex-1">
+            <h3 className="font-bold text-gray-900 text-lg group-hover:text-green-600 transition-colors">{project.name}</h3>
+            <p className="text-sm text-gray-600 mt-1 flex items-center">
+              <Users className="h-4 w-4 mr-1" />
+              {project.responsible}
+            </p>
+          </div>
+        </div>
+        <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button onClick={onView} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <Eye className="h-4 w-4 text-gray-600" />
+          </button>
+          <button onClick={onEdit} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <Edit className="h-4 w-4 text-gray-600" />
+          </button>
+        </div>
+      </div>
+      
+      <div className="flex flex-wrap gap-2 mb-4">
+        <span className="text-xs px-3 py-1 rounded-full font-medium flex items-center" style={{ backgroundColor: statusColors[project.status] + '20', color: statusColors[project.status] }}>
+          <Activity className="h-3 w-3 mr-1" />
+          {project.status}
+        </span>
+        <span className="text-xs px-3 py-1 rounded-full font-medium flex items-center" style={{ backgroundColor: riskColors[project.risk] + '20', color: riskColors[project.risk] }}>
+          {project.risk === 'Alto' && <AlertTriangle className="h-3 w-3 mr-1" />}
+          {project.risk === 'Médio' && <Shield className="h-3 w-3 mr-1" />}
+          {project.risk === 'Baixo' && <Check className="h-3 w-3 mr-1" />}
+          Risco {project.risk}
+        </span>
+      </div>
+      
+      <div className="grid grid-cols-2 gap-3 text-sm mb-4">
+        <div className="flex items-center">
+          <Calendar className="h-4 w-4 text-gray-400 mr-2" />
+          <div>
+            <span className="text-gray-600">Início:</span>
+            <span className="ml-1 font-semibold text-gray-900">{project.startQuarter}</span>
+          </div>
+        </div>
+        <div className="flex items-center">
+          <Clock className="h-4 w-4 text-gray-400 mr-2" />
+          <div>
+            <span className="text-gray-600">Duração:</span>
+            <span className="ml-1 font-semibold text-gray-900">{project.duration} trim.</span>
+          </div>
+        </div>
+        <div className="flex items-center">
+          <DollarSign className="h-4 w-4 text-gray-400 mr-2" />
+          <div>
+            <span className="text-gray-600">Orçamento:</span>
+            <span className="ml-1 font-semibold text-gray-900">R$ {formatNumber(project.budget / 1000)}k</span>
+            <span className="text-xs text-blue-600 ml-1">(US$ {formatNumber(project.budget / 5.7 / 1000)}k)</span>
+          </div>
+        </div>
+        <div className="flex items-center">
+          <TrendingUp className="h-4 w-4 text-gray-400 mr-2" />
+          <div>
+            <span className="text-gray-600">Progresso:</span>
+            <span className="ml-1 font-semibold text-gray-900">{project.progress}%</span>
+          </div>
+        </div>
+      </div>
+      
+      {project.progress > 0 && (
+        <div className="relative">
+          <div className="bg-gray-200 rounded-full h-3 overflow-hidden">
+            <div 
+              className="h-3 rounded-full transition-all duration-500 relative overflow-hidden"
+              style={{ 
+                width: `${project.progress}%`,
+                backgroundColor: project.progress === 100 ? '#10B981' : '#3B82F6'
+              }}
+            >
+              <div className="absolute inset-0 bg-white opacity-30 animate-pulse" />
+            </div>
+          </div>
+          <p className="text-xs text-gray-500 mt-1 text-right">
+            {project.progress === 100 ? 'Concluído' : `${project.progress}% completo`}
+          </p>
+        </div>
+      )}
+    </div>
+  </div>
+);
+
+// Main Component
+export default function AraucoRoadmapSystem() {
+  const [projects, setProjects] = useState([]);
+  const [activeView, setActiveView] = useState('dashboard');
+  const [filters, setFilters] = useState({ search: '', pillar: '', workFront: '', status: '', responsible: '', risk: '', quarter: '' });
+  const [selectedProjects, setSelectedProjects] = useState([]);
+  const [viewMode, setViewMode] = useState('cards');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState('');
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [draggedProject, setDraggedProject] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('araucoProjects');
+    if (saved) {
+      try {
+        setProjects(JSON.parse(saved));
+      } catch (e) {
+        setProjects(generateInitialProjects());
+      }
+    } else {
+      setProjects(generateInitialProjects());
+    }
+  }, []);
+
+  useEffect(() => {
+    if (projects.length > 0) {
+      const timer = setTimeout(() => {
+        setIsSaving(true);
+        localStorage.setItem('araucoProjects', JSON.stringify(projects));
+        setTimeout(() => setIsSaving(false), 500);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [projects]);
+
+  const filteredProjects = useMemo(() => {
+    return projects.filter(p => {
+      const search = filters.search.toLowerCase();
+      return (!filters.search || p.name.toLowerCase().includes(search) || p.description.toLowerCase().includes(search) || p.responsible.toLowerCase().includes(search)) &&
+             (!filters.pillar || p.pillar === filters.pillar) &&
+             (!filters.workFront || p.workFront === filters.workFront) &&
+             (!filters.status || p.status === filters.status) &&
+             (!filters.responsible || p.responsible === filters.responsible) &&
+             (!filters.risk || p.risk === filters.risk) &&
+             (!filters.quarter || p.startQuarter === filters.quarter);
+    });
+  }, [projects, filters]);
+
+  const handleCreateProject = (data) => {
+    const newProject = {
+      ...data,
+      id: Math.max(...projects.map(p => p.id), 0) + 1,
+      progress: 0,
+      lastUpdate: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      tags: ['novo', data.pillar.toLowerCase()],
+      priority: 3,
+      dependencies: [],
+      deliverables: data.deliverables.filter(d => d.trim())
+    };
+    setProjects([...projects, newProject]);
+    setShowModal(false);
+  };
+
+  const handleUpdateProject = (updated) => {
+    setProjects(projects.map(p => p.id === updated.id ? { ...updated, lastUpdate: new Date().toISOString() } : p));
+    setShowModal(false);
+  };
+
+  const handleDeleteProjects = (ids) => {
+    if (window.confirm(`Excluir ${ids.length} projeto(s)?`)) {
+      setProjects(projects.filter(p => !ids.includes(p.id)));
+      setSelectedProjects([]);
+    }
+  };
+
+  const handleDragStart = (e, project) => {
+    setDraggedProject(project);
+  };
+
+  const handleDrop = (e, quarter, pillar) => {
+    e.preventDefault();
+    if (draggedProject) {
+      setProjects(projects.map(p => 
+        p.id === draggedProject.id ? { ...p, startQuarter: quarter, pillar, lastUpdate: new Date().toISOString() } : p
+      ));
+    }
+  };
+
+  const handleExport = () => {
+    const data = selectedProjects.length > 0 ? projects.filter(p => selectedProjects.includes(p.id)) : projects;
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `arauco-projects-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const paginatedProjects = useMemo(() => {
+    const start = (currentPage - 1) * 20;
+    return filteredProjects.slice(start, start + 20);
+  }, [filteredProjects, currentPage]);
+
+  const totalPages = Math.ceil(filteredProjects.length / 20);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Header with Logo */}
+        <div className="mb-8 bg-white rounded-2xl shadow-lg p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-6">
+              {/* Arauco Logo */}
+              <div className="bg-gradient-to-br from-green-600 to-green-700 p-4 rounded-xl shadow-lg">
+                <svg className="h-12 w-12 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 bg-gradient-to-r from-green-600 to-green-800 bg-clip-text text-transparent">
+                  Sistema de Roadmap Estratégico
+                </h1>
+                <p className="text-gray-600 mt-1 flex items-center">
+                  <span className="font-semibold">Arauco do Brasil</span>
+                  <span className="mx-2">•</span>
+                  <span>{projects.length} projetos</span>
+                  <span className="mx-2">•</span>
+                  <span className="text-green-600 font-semibold">R$ {(projects.reduce((sum, p) => sum + p.budget, 0) / 1000000).toFixed(1)}M</span>
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              {isSaving && (
+                <div className="flex items-center text-green-600 bg-green-50 px-4 py-2 rounded-lg">
+                  <Save className="h-4 w-4 mr-2 animate-pulse" />
+                  <span className="text-sm font-medium">Salvando...</span>
+                </div>
+              )}
+              <button 
+                onClick={() => { setModalType('create'); setShowModal(true); }} 
+                className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all shadow-md hover:shadow-lg flex items-center font-medium"
+              >
+                <Plus className="h-5 w-5 mr-2" />
+                Novo Projeto
+              </button>
+              <button 
+                onClick={handleExport} 
+                className="px-6 py-3 bg-white border-2 border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-all shadow-md hover:shadow-lg flex items-center font-medium"
+              >
+                <Download className="h-5 w-5 mr-2" />
+                Exportar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation Tabs */}
+        <div className="mb-6 bg-white rounded-xl shadow-md p-2">
+          <div className="flex space-x-2">
+            <button 
+              onClick={() => setActiveView('dashboard')} 
+              className={`px-6 py-3 rounded-lg font-medium transition-all flex items-center space-x-2 ${
+                activeView === 'dashboard' 
+                  ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-md' 
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <BarChart3 className="h-5 w-5" />
+              <span>Dashboard</span>
+            </button>
+            <button 
+              onClick={() => setActiveView('timeline')} 
+              className={`px-6 py-3 rounded-lg font-medium transition-all flex items-center space-x-2 ${
+                activeView === 'timeline' 
+                  ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-md' 
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <Calendar className="h-5 w-5" />
+              <span>Timeline</span>
+            </button>
+            <button 
+              onClick={() => setActiveView('projects')} 
+              className={`px-6 py-3 rounded-lg font-medium transition-all flex items-center space-x-2 ${
+                activeView === 'projects' 
+                  ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-md' 
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <Layers className="h-5 w-5" />
+              <span>Projetos</span>
+              <span className="ml-2 px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-bold">
+                {filteredProjects.length}
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {activeView === 'projects' && (
+          <div className="mb-6 bg-white p-4 rounded-xl shadow-md">
+            <div className="flex gap-2 items-center overflow-x-auto">
+              <div className="relative flex-shrink-0">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Buscar..."
+                  value={filters.search}
+                  onChange={(e) => setFilters({...filters, search: e.target.value})}
+                  className="pl-9 pr-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 w-40"
+                />
+              </div>
+              <select value={filters.pillar} onChange={(e) => setFilters({...filters, pillar: e.target.value})} className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 flex-shrink-0">
+                <option value="">Todos os Pilares</option>
+                {pillars.map(p => <option key={p} value={p}>{p}</option>)}
+              </select>
+              <select value={filters.status} onChange={(e) => setFilters({...filters, status: e.target.value})} className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 flex-shrink-0">
+                <option value="">Todos os Status</option>
+                {statuses.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <select value={filters.responsible} onChange={(e) => setFilters({...filters, responsible: e.target.value})} className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 flex-shrink-0">
+                <option value="">Todos os Responsáveis</option>
+                {[...new Set(projects.map(p => p.responsible))].sort().map(r => <option key={r} value={r}>{r}</option>)}
+              </select>
+              <select value={filters.risk} onChange={(e) => setFilters({...filters, risk: e.target.value})} className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 flex-shrink-0">
+                <option value="">Todos os Riscos</option>
+                {risks.map(r => <option key={r} value={r}>{r}</option>)}
+              </select>
+              <select value={filters.quarter} onChange={(e) => setFilters({...filters, quarter: e.target.value})} className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 flex-shrink-0">
+                <option value="">Todos os Trimestres</option>
+                {quarters.map(q => <option key={q} value={q}>{q}</option>)}
+              </select>
+              <button onClick={() => setFilters({ search: '', pillar: '', workFront: '', status: '', responsible: '', risk: '', quarter: '' })} className="px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors flex-shrink-0">
+                <X className="h-4 w-4 inline mr-1" />
+                Limpar
+              </button>
+              <div className="ml-auto flex items-center space-x-2 text-sm text-gray-600 flex-shrink-0">
+                <span className="text-green-600 font-bold">{filteredProjects.length}</span>
+                <span>de {projects.length} projetos</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeView === 'dashboard' && <Dashboard projects={projects} />}
+        
+        {activeView === 'timeline' && (
+          <Timeline 
+            projects={filteredProjects} 
+            onDragStart={handleDragStart}
+            onDragEnd={() => setDraggedProject(null)}
+            onDrop={handleDrop}
+          />
+        )}
+        
+        {activeView === 'projects' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <button onClick={() => setViewMode('cards')} className={`p-2 rounded ${viewMode === 'cards' ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'}`}>
+                  <Grid3X3 className="h-5 w-5" />
+                </button>
+                <button onClick={() => setViewMode('table')} className={`p-2 rounded ${viewMode === 'table' ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'}`}>
+                  <List className="h-5 w-5" />
+                </button>
+              </div>
+              
+              {selectedProjects.length > 0 && (
+                <div className="flex items-center space-x-4 bg-blue-50 px-4 py-2 rounded-lg">
+                  <span className="text-sm text-blue-700">{selectedProjects.length} selecionado(s)</span>
+                  <button onClick={() => handleDeleteProjects(selectedProjects)} className="text-sm text-red-600 hover:text-red-700 font-medium">
+                    Excluir
+                  </button>
+                  <button onClick={handleExport} className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                    Exportar
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {viewMode === 'cards' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {paginatedProjects.map(project => (
+                  <ProjectCard
+                    key={project.id}
+                    project={project}
+                    selected={selectedProjects.includes(project.id)}
+                    onSelect={() => setSelectedProjects(prev => prev.includes(project.id) ? prev.filter(id => id !== project.id) : [...prev, project.id])}
+                    onView={() => { setSelectedProject(project); setModalType('view'); setShowModal(true); }}
+                    onEdit={() => { setSelectedProject(project); setModalType('edit'); setShowModal(true); }}
+                  />
+                ))}
+              </div>
+            )}
+
+            {viewMode === 'table' && (
+              <div className="bg-white rounded-lg shadow-md overflow-hidden">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left">
+                        <input
+                          type="checkbox"
+                          checked={selectedProjects.length === filteredProjects.length && filteredProjects.length > 0}
+                          onChange={() => setSelectedProjects(selectedProjects.length === filteredProjects.length ? [] : filteredProjects.map(p => p.id))}
+                        />
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nome</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pilar</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Responsável</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Orçamento</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {paginatedProjects.map(project => (
+                      <tr key={project.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3">
+                          <input
+                            type="checkbox"
+                            checked={selectedProjects.includes(project.id)}
+                            onChange={() => setSelectedProjects(prev => prev.includes(project.id) ? prev.filter(id => id !== project.id) : [...prev, project.id])}
+                          />
+                        </td>
+                        <td className="px-4 py-3">
+                          <p className="text-sm font-medium text-gray-900">{project.name}</p>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center">
+                            <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: pillarColors[project.pillar] }} />
+                            <span className="text-sm">{project.pillar}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="text-xs px-2 py-1 rounded-full" style={{ backgroundColor: statusColors[project.status] + '20', color: statusColors[project.status] }}>
+                            {project.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-sm">{project.responsible}</td>
+                        <td className="px-4 py-3 text-sm">R$ {(project.budget / 1000000).toFixed(2)}M</td>
+                        <td className="px-4 py-3">
+                          <div className="flex space-x-1">
+                            <button onClick={() => { setSelectedProject(project); setModalType('view'); setShowModal(true); }} className="p-1 hover:bg-gray-100 rounded">
+                              <Eye className="h-4 w-4 text-gray-600" />
+                            </button>
+                            <button onClick={() => { setSelectedProject(project); setModalType('edit'); setShowModal(true); }} className="p-1 hover:bg-gray-100 rounded">
+                              <Edit className="h-4 w-4 text-gray-600" />
+                            </button>
+                            <button onClick={() => handleDeleteProjects([project.id])} className="p-1 hover:bg-gray-100 rounded">
+                              <Trash2 className="h-4 w-4 text-red-600" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center space-x-2">
+                <button onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1} className="px-3 py-1 border rounded disabled:opacity-50">
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                {[...Array(Math.min(5, totalPages))].map((_, i) => (
+                  <button key={i} onClick={() => setCurrentPage(i + 1)} className={`px-3 py-1 border rounded ${currentPage === i + 1 ? 'bg-blue-600 text-white' : ''}`}>
+                    {i + 1}
+                  </button>
+                ))}
+                <button onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages} className="px-3 py-1 border rounded disabled:opacity-50">
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {showModal && modalType === 'view' && (
+          <ViewModal 
+            project={selectedProject} 
+            onClose={() => setShowModal(false)}
+            onEdit={() => setModalType('edit')}
+          />
+        )}
+
+        {showModal && modalType === 'create' && (
+          <FormModal
+            project={null}
+            onClose={() => setShowModal(false)}
+            onSave={handleCreateProject}
+            isEdit={false}
+          />
+        )}
+
+        {showModal && modalType === 'edit' && (
+          <FormModal
+            project={selectedProject}
+            onClose={() => setShowModal(false)}
+            onSave={handleUpdateProject}
+            isEdit={true}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
